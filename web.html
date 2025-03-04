@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reseñas de Películas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #2c2c2c;
+            color: white;
+            text-align: center;
+        }
+        .header {
+            background: linear-gradient(90deg, #ff5733, blue);
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            animation: fadeIn 1.5s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+            padding: 10px;
+        }
+        .search-bar {
+            padding: 5px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+        }
+        .category-menu {
+            display: none;
+            background-color: #333;
+            position: absolute;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            text-align: left;
+            padding: 10px;
+        }
+        .category-menu a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 8px;
+        }
+        .category-menu a:hover {
+            background-color: #444;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+        }
+        .movie {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 10px;
+            background: white;
+            color: black;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        .movie:hover {
+            transform: scale(1.05);
+        }
+        .movie img {
+            width: 200px;
+            border-radius: 5px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            width: 60%;
+            text-align: left;
+            position: relative;
+        }
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .watch-button {
+            display: none;
+            margin-top: 10px;
+            padding: 10px 15px;
+            background: #ff5733;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        /* Estilo del modal de términos y condiciones */
+        #terms-modal {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+        }
+        #terms-modal .terms-content {
+            background: white;
+            color: black;
+            padding: 20px;
+            width: 20%;
+            border-radius: 10px;
+            text-align: center;
+        }
+        #terms-modal .terms-content button {
+            background-color: #ff5733;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #terms-modal .terms-content button:hover {
+            background-color: #e04e27;
+        }
+        .terms-checkbox {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .terms-checkbox input {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Modal de términos y condiciones -->
+    <div id="terms-modal">
+        <div class="terms-content">
+            <h2>Bienvenido</h2>
+            <p>Este sitio es solo con fines académicos. Por favor, acepta los términos y condiciones para continuar.</p>
+
+            <!-- Casilla de verificación -->
+            <div class="terms-checkbox">
+                <input type="checkbox" id="acceptCheckbox">
+                <label for="acceptCheckbox">Acepto los términos y condiciones</label>
+            </div>
+
+            <button onclick="acceptTerms()" id="acceptButton" disabled>Aceptar</button>
+        </div>
+    </div>
+
+    <div class="header">
+        <span class="menu-icon" onclick="toggleCategories()">☰</span>
+        Bienvenido a las Reseñas de Películas
+        <input type="text" class="search-bar" id="searchInput" onkeyup="searchMovie()" placeholder="Buscar película...">
+    </div>
+
+    <!-- Menú de categorías -->
+    <div id="category-menu" class="category-menu">
+        <a href="#" onclick="filterCategory('action')">Acción</a>
+        <a href="#" onclick="filterCategory('sci-fi')">Ciencia Ficción</a>
+        <a href="#" onclick="filterCategory('thriller')">Suspenso</a>
+        <a href="#" onclick="filterCategory('comedy')">Comedia</a>
+        <a href="#" onclick="filterCategory('animation')">Animación</a>
+        <a href="#" onclick="filterCategory('all')">Todas</a>
+    </div>
+    
+    <div class="container" id="movie-list">
+        <!-- Película Inception -->
+        <div class="movie" onclick="openModal('inception')" data-category="sci-fi">
+            <h2>Inception</h2>
+            <img src="Inception" alt="Inception">
+            <p>Una película de Christopher Nolan que juega con los sueños y la realidad.</p>
+        </div>
+        
+        <!-- Película Interstellar -->
+        <div class="movie" onclick="openModal('interstellar')" data-category="sci-fi">
+            <h2>Interstellar</h2>
+            <img src="Interstellar" alt="Interstellar">
+            <p>Una épica película de ciencia ficción que explora el tiempo, el espacio y el amor.</p>
+        </div>
+
+        <!-- Película John Wick -->
+        <div class="movie" onclick="openModal('johnwick')" data-category="action">
+            <h2>John Wick</h2>
+            <img src="John Wick" alt="John Wick">
+            <p>Un exasesino a sueldo busca venganza tras el asesinato de su perro, un regalo de su difunta esposa.</p>
+        </div>
+
+        <!-- Película Chucky -->
+        <div class="movie" onclick="openModal('chucky')" data-category="thriller">
+            <h2>Chucky</h2>
+            <img src="chucky" alt="Chucky">
+            <p>Un muñeco poseído por un asesino psicópata aterroriza a una familia en esta película de suspenso y terror.</p>
+        </div>
+
+        <!-- Película Child's Play 2 (Chucky 2) -->
+        <div class="movie" onclick="openModal('chucky2')" data-category="thriller">
+            <h2>Child's Play 2</h2>
+            <img src="chucky2" alt="chucky2">
+            <p>El muñeco asesino regresa, ahora poseyendo nuevamente a Chucky y aterroriza a una nueva familia.</p>
+        </div>
+
+        <!-- Película Shrek 1 -->
+        <div class="movie" onclick="openModal('shrek1')" data-category="animation">
+            <h2>Shrek 1</h2>
+            <img src="shrek1" alt="Shrek1">
+            <p>Un ogro llamado Shrek debe rescatar a una princesa en esta famosa película de animación llena de humor y aventura.</p>
+        </div>
+
+        <!-- Película The Hangover (Comedia) -->
+        <div class="movie" onclick="openModal('hangover')" data-category="comedy">
+            <h2>The Hangover</h2>
+            <img src="Qué pasó ayer" alt="Qué pasó ayer">
+            <p>Una comedia que sigue a un grupo de amigos que intentan recordar los eventos de su noche de despedida de soltero en Las Vegas.</p>
+        </div>
+
+        <!-- Película Juego de gemelas -->
+        <div class="movie" onclick="openModal('twins')" data-category="comedy">
+            <h2>Juego de gemelas</h2>
+            <img src="Juego de gemelas" alt="Juego de gemelas">
+            <p>Dos gemelas separadas al nacer se encuentran en un campamento de verano y traman un plan para reunir a sus padres.</p>
+        </div>
+
+    </div>
+    
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title"></h2>
+            <p id="modal-text"></p>
+            <a id="watch-link" class="watch-button" target="_blank">Ver película</a>
+        </div>
+    </div>
+
+    <script>
+        // Función para habilitar el botón "Aceptar" cuando el checkbox está marcado
+        document.getElementById("acceptCheckbox").addEventListener("change", function() {
+            const acceptButton = document.getElementById("acceptButton");
+            acceptButton.disabled = !this.checked;
+        });
+
+        // Función para cerrar el modal de términos
+        function acceptTerms() {
+            document.getElementById("terms-modal").style.display = "none";
+        }
+
+        // Mostrar el modal de aceptación de términos al cargar la página
+        window.onload = function() {
+            document.getElementById("terms-modal").style.display = "flex";
+        };
+
+        function toggleCategories() {
+            const menu = document.getElementById('category-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function openModal(movie) {
+            const title = {
+                'inception': 'Inception',
+                'interstellar': 'Interstellar',
+                'johnwick': 'John Wick',
+                'chucky': 'Chucky',
+                'chucky2': 'Child\'s Play 2',
+                'shrek1': 'Shrek 1',
+                'hangover': 'The Hangover', 
+                'twins': 'Juego de gemelas'
+            };
+            const reviews = {
+                'inception': "Inception es una obra maestra de Christopher Nolan que explora la mente humana a través de los sueños y la percepción de la realidad.",
+                'interstellar': "Interstellar es una película de ciencia ficción que trasciende los límites del tiempo y el espacio.",
+                'johnwick': "John Wick es una intensa película de acción que sigue a un hombre que busca venganza tras la muerte de su perro, un último regalo de su esposa.",
+                'chucky': "Chucky es una película de terror y suspenso sobre un muñeco poseído que aterroriza a una familia.",
+                'chucky2': "Child's Play 2 sigue la historia del muñeco asesino que regresa para aterrorizar a una nueva víctima después de haber sido reactivado.",
+                'shrek1': "Shrek 1 es una película animada que sigue las aventuras de un ogro llamado Shrek mientras lucha por rescatar a una princesa y descubre la importancia de la amistad y el amor.",
+                'hangover': "The Hangover es una comedia que narra las desventuras de un grupo de amigos que intentan recordar lo que ocurrió durante una alocada noche en Las Vegas.",
+                'twins': "Juego de gemelas es una comedia que sigue a dos gemelas separadas al nacer que traman un plan para reunir a sus padres."
+            };
+            const links = {
+                'inception': "https://www.tokyvideo.com/es/video/el-origen-2",
+                'interstellar': "https://www.pelis182.com/interestelar/",
+                'johnwick': "https://www.pelis182.com/john-wick/",
+                'chucky': "https://www.pelis182.com/chucky/",
+                'chucky2': "https://www.pelis182.com/chucky-el-muneco-diabolico-2/",
+                'shrek1': "https://www.pelis182.com/shrek-html/",
+                'hangover': "https://www.pelis182.com/que-paso-ayer/",
+                'twins': "https://www.pelis182.com/juego-de-gemelas/"
+            };
+
+            document.getElementById("modal-title").innerText = title[movie];
+            document.getElementById("modal-text").innerText = reviews[movie];
+
+            const watchLink = document.getElementById("watch-link");
+            watchLink.href = links[movie];
+            watchLink.style.display = 'inline-block';
+
+            document.getElementById("modal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("modal").style.display = "none";
+        }
+
+        function searchMovie() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let movies = document.querySelectorAll(".movie");
+
+            movies.forEach(movie => {
+                let title = movie.getElementsByTagName("h2")[0].innerText.toLowerCase();
+                movie.style.display = title.includes(input) ? "block" : "none";
+            });
+        }
+
+        function filterCategory(category) {
+            let movies = document.querySelectorAll(".movie");
+            movies.forEach(movie => {
+                let movieCategory = movie.getAttribute("data-category");
+                if (category === 'all' || movieCategory.includes(category)) {
+                    movie.style.display = "block";
+                } else {
+                    movie.style.display = "none";
+                }
+            });
+            document.getElementById('category-menu').style.display = 'none'; // Ocultar el menú después de aplicar el filtro
+        }
+    </script>
+</body>
+</html>
